@@ -34,7 +34,7 @@ def main():
     df_raw = pd.read_excel(temp_excel, sheet_name=0, header=None)
     
     header_row_idx = 0
-    for idx, row in df_raw.head(15).iterrows():
+    for idx, row in df_raw.head(20).iterrows():
         row_str = " ".join(str(val) for val in row.values)
         if "V06CE" in row_str or "ŠÚKL" in row_str or "Kód" in row_str or "Názov" in row_str:
             header_row_idx = idx
@@ -44,6 +44,7 @@ def main():
     
     df = pd.read_excel(temp_excel, sheet_name=0, header=header_row_idx)
     
+    # Vyfiltrujeme riadky, ktoré obsahujú V06CE kdekoľvek v riadku
     mask = df.astype(str).apply(lambda col: col.str.contains("V06CE", na=False)).any(axis=1)
     df_v06ce = df[mask].copy()
     
@@ -51,41 +52,44 @@ def main():
     
     cleaned_data = []
     for idx, row in df_v06ce.iterrows():
-        def get_col(*names):
-            for name in names:
-                for col in df.columns:
-                    if name.lower() in str(col).lower():
-                        val = row.get(col)
-                        if pd.notna(val):
-                            return str(val).strip()
-            return ""
+        row_values = [str(val).strip() for val in row.values if pd.notna(val)]
+        
+        # Hľadáme kód ŠÚKL (zvyčajne alfanumerický kód, ktorý nie je presne "V06CE")
+        sukl = ""
+        nazov = ""
+        balenie = ""
+        vyrobca = ""
+        doplnok = ""
+        
+        for val in row_values:
+            # Ak to vyzerá ako ŠÚKL kód (napr. 5-8 znakov, obsahuje číslice)
+            if re.match(r"^[0-9A-Z]{5,10}$", val) and val != "V06CE" and not sukl:
+                sukl = val
+            elif len(val) > 3 and not nazov and "V06CE" not in val:
+                nazov = val
+            elif ("g" in val.lower() or "kg" in val.lower() or "ml" in val.lower() or "ks" in val.lower()) and not balenie:
+                balenie = val
 
-        sukl = get_col("ŠÚKL", "Kód", "Kod")
-        nazov = get_col("Názov", "Nazov")
-        doplnok = get_col("Doplnok", "Doplnenie")
-        vyrobca = get_col("Držiteľ", "Výrobca", "Drzitel")
-        balenie = get_col("Balenie", "Veľkosť", "Velkost")
-
-        if not sukl or sukl == "nan":
-            for val in row.values:
-                val_str = str(val).strip()
-                if re.match(r"^[0-9A-Z]{5,8}$", val_str):
-                    sukl = val_str
-                    break
-
-        # DÔLEŽITÉ: Preskočíme riadky, ktoré sú len skupinovými hlavičkami (začínajú na V06CE)
-        if sukl.upper().startswith("V06CE") or not sukl or sukl == "nan":
+        # Ak sme nenašli špecifický kód, skúsime prejsť stĺpce priamo
+        if not sukl or sukl.upper() == "V06CE":
+            continue
+            
+        # Preskočíme hlavičkové riadky kategórií
+        if sukl.upper().startswith("V06CE"):
             continue
 
         item = {
             "sukl": sukl,
-            "nazov": nazov if nazov and nazov != "nan" else "Bez názvu",
-            "doplnok": doplnok if doplnok != "nan" else "",
-            "vyrobca": vyrobca if vyrobca != "nan" else "",
-            "balenie": balenie if balenie != "nan" else "",
-            "hmotnost_g": parse_weight_in_grams(str(balenie) + " " + str(doplnok))
+            "nazov": nazov if nazov else "Bez lepku - produkt",
+            "doplnok": doplnok,
+            "vyrobca": vyrobca,
+            "balenie": balenie if balenie else "1 balenie",
+            "hmotnost_g": parse_weight_in_grams(balenie)
         }
-        cleaned_data.append(item)
+        
+        # Pridáme len ak sa nejedná o duplicitnú alebo prázdnu položku
+        if item["sukl"] and item["sukl"] not in [x["sukl"] for x in cleaned_data]:
+            cleaned_data.append(item)
     
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
