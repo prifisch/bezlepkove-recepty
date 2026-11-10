@@ -7,6 +7,7 @@ import requests
 EXCEL_URL = "https://cloud.health.gov.sk/s/WTj7b7fCXoms9H8/download"
 OUTPUT_DIR = "data"
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "v06ce.json")
+OVERRIDES_FILE = os.path.join(OUTPUT_DIR, "local_overrides.json")
 
 def parse_weight_in_grams(text):
     if not isinstance(text, str):
@@ -20,62 +21,6 @@ def parse_weight_in_grams(text):
     if g_match:
         return int(g_match.group(1))
     return 0
-
-def get_product_image_url(nazov, vyrobca):
-    """
-    Priradí reálnu a overenú fotografiu obalu produktu na základe 
-    výrobcu a kľúčových slov v názve pre slovenský trh.
-    """
-    n = nazov.lower()
-    v = vyrobca.lower()
-    
-    # 1. Značka SCHÄR (Dr. Schär) - najrozšírenejšie bezlepkové potraviny
-    if "schär" in v or "schaer" in n:
-        if "mix b" in n or "bread-mix" in n:
-            return "https://images.schaer.com/is/image/schaer/mix-b-1kg-fr-de-it-en-p-v1?$product_detail_retina$"
-        if "mix c" in n or "patisserie" in n:
-            return "https://images.schaer.com/is/image/schaer/mix-c-1kg-fr-de-it-en-p-v1?$product_detail_retina$"
-        if "mix it" in n or "universal" in n:
-            return "https://images.schaer.com/is/image/schaer/mix-it-universal-1kg-int-p-v1?$product_detail_retina$"
-        if "meisterbakers" in n or "chlieb" in n or "bread" in n:
-            return "https://images.schaer.com/is/image/schaer/meisterbakers-ciabatta-int-p-v1?$product_detail_retina$"
-        if "spaghet" in n or "makar" in n or "cestovin" in n:
-            return "https://images.schaer.com/is/image/schaer/spaghetti-500g-int-p-v1?$product_detail_retina$"
-        if "penne" in n:
-            return "https://images.schaer.com/is/image/schaer/penne-500g-int-p-v1?$product_detail_retina$"
-        if "cracker" in n or "sušienk" in n or "biscuits" in n:
-            return "https://images.schaer.com/is/image/schaer/saltì-int-p-v1?$product_detail_retina$"
-        # Všeobecný Schär produkt
-        return "https://images.schaer.com/is/image/schaer/mix-b-1kg-fr-de-it-en-p-v1?$product_detail_retina$"
-
-    # 2. Značka BEZGLUTEN
-    if "bezgluten" in v or "bezgluten" in n:
-        if "múk" in n or "zmes" in n:
-            return "https://www.bezgluten.pl/userdata/public/gfx/3588/Uniwersalna-maka-bezglutenowa-1kg-Bezgluten.jpg"
-        if "chlieb" in n:
-            return "https://www.bezgluten.pl/userdata/public/gfx/3615/Chleb-bialy-krojony-bez-glutenu-250g-Bezgluten.jpg"
-        if "cestovin" in n or "nitov" in n or "fliač" in n:
-            return "https://www.bezgluten.pl/userdata/public/gfx/3650/Makaron-swiderki-bez-glutenu-500g-Bezgluten.jpg"
-        return "https://www.bezgluten.pl/userdata/public/gfx/3588/Uniwersalna-maka-bezglutenowa-1kg-Bezgluten.jpg"
-
-    # 3. Značka PROCEL
-    if "procel" in v or "procel" in n:
-        if "múk" in n or "zmes" in n:
-            return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4x5Hh-Z2lU1dC9Y9sQ9vQ3v5xQ3v5xQ3v5g&s"
-        return "https://images.unsplash.com/photo-1621996346565-e3d5d6281229?w=300&auto=format&fit=crop&q=60"
-
-    # 4. Všeobecné kategórie podľa názvu produktu
-    if "múk" in n or "zmes" in n or "škrob" in n:
-        return "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=300&auto=format&fit=crop&q=60"
-    if "chlieb" in n or "pečivo" in n or "žeml" in n or "toast" in n:
-        return "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&auto=format&fit=crop&q=60"
-    if "cestovin" in n or "rezanc" in n or "špaget" in n or "kolienk" in n:
-        return "https://images.unsplash.com/photo-1621996346565-e3d5d6281229?w=300&auto=format&fit=crop&q=60"
-    if "suchár" in n or "piškót" in n or "sušienk" in n or "tyčink" in n:
-        return "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=300&auto=format&fit=crop&q=60"
-
-    # Predvolený čistý produktový obrázok
-    return "https://images.unsplash.com/photo-1584799015956-62776c5b966c?w=300&auto=format&fit=crop&q=60"
 
 def main():
     print("Sťahujem aktuálny zoznam z MZ SR...")
@@ -99,6 +44,16 @@ def main():
     print(f"Hlavička nájdená na riadku: {header_row_idx}")
     df = pd.read_excel(temp_excel, sheet_name=0, header=header_row_idx)
     
+    # Načítanie lokálnych úprav (overrides), ak sú k dispozícii
+    overrides = {}
+    if os.path.exists(OVERRIDES_FILE):
+        try:
+            with open(OVERRIDES_FILE, "r", encoding="utf-8") as f:
+                overrides = json.load(f)
+            print(f"Načítaných {len(overrides)} položiek z lokálnej databázy overrides.")
+        except Exception as e:
+            print(f"Chyba pri načítavaní local_overrides.json: {e}")
+
     cleaned_data = []
     in_v06ce_section = False
     
@@ -168,14 +123,25 @@ def main():
         clean_nazov = nazov if nazov else "Bezlepková potravina"
         clean_vyrobca = vyrobca if pd.notna(vyrobca) else ""
         
+        # Predvolená hmotnosť z textu
+        weight = parse_weight_in_grams(f"{balenie} {doplnok}")
+        image_path = ""
+
+        # Ak máme pre tento ŠÚKL kód vytvorenú lokálnu úpravu, aplikujeme ju
+        if sukl in overrides:
+            if "hmotnost_g" in overrides[sukl]:
+                weight = overrides[sukl]["hmotnost_g"]
+            if "image" in overrides[sukl]:
+                image_path = overrides[sukl]["image"]
+
         item = {
             "sukl": sukl,
             "nazov": clean_nazov,
             "doplnok": doplnok if pd.notna(doplnok) else "",
             "vyrobca": clean_vyrobca,
             "balenie": balenie if pd.notna(balenie) else "",
-            "hmotnost_g": parse_weight_in_grams(f"{balenie} {doplnok}"),
-            "image": get_product_image_url(clean_nazov, clean_vyrobca)
+            "hmotnost_g": weight,
+            "image": image_path
         }
         
         if item["sukl"] and not any(x["sukl"] == item["sukl"] for x in cleaned_data):
@@ -185,7 +151,7 @@ def main():
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(cleaned_data, f, ensure_ascii=False, indent=2)
         
-    print(f"Uložených {len(cleaned_data)} produktov s overenými fotografiami do {OUTPUT_FILE}")
+    print(f"Uložených {len(cleaned_data)} produktov do {OUTPUT_FILE}")
     
     if os.path.exists(temp_excel):
         os.remove(temp_excel)
