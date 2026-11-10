@@ -21,32 +21,31 @@ def parse_weight_in_grams(text):
         return int(g_match.group(1))
     return 0
 
-def get_product_image_url(nazov, vyrobca):
+def get_real_product_image(nazov, vyrobca):
     """
-    Vygeneruje relevantný obrázok produktu na základe názvu a výrobcu
-    (využíva overené ilustračné a produktové zdroje).
+    Vyhľadá reálnu fotografiu produktu cez Open Food Facts API 
+    na základe výrobcu a názvu potraviny.
     """
-    nazov_l = nazov.lower()
-    vyrobca_l = vyrobca.lower()
+    clean_nazov = re.sub(r'\d+\s*(?:g|kg|ml|ks|bal)', '', nazov, flags=re.IGNORECASE).strip()
+    query = f"{vyrobca} {clean_nazov}".strip()
     
-    # Priradenie reálnych alebo reprezentatívnych obrázkov podľa kľúčových slov / značiek
-    if "schär" in vyrobca_l or "schaer" in nazov_l:
-        if "chlieb" in nazov_l or "bread" in nazov_l:
-            return "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&auto=format&fit=crop&q=60"
-        elif "cestovin" in nazov_l or "spaghet" in nazov_l:
-            return "https://images.unsplash.com/photo-1621996346565-e3d5d6281229?w=300&auto=format&fit=crop&q=60"
-        else:
-            return "https://images.unsplash.com/photo-1589367920969-ab8e050bbc04?w=300&auto=format&fit=crop&q=60"
-    elif "múk" in nazov_l or "zmes" in nazov_l or "škrob" in nazov_l:
-        return "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=300&auto=format&fit=crop&q=60"
-    elif "chlieb" in nazov_l or "pečivo" in nazov_l or "žeml" in nazov_l:
-        return "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=300&auto=format&fit=crop&q=60"
-    elif "cestovin" in nazov_l or "rezanc" in nazov_l or "špaget" in nazov_l:
-        return "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=300&auto=format&fit=crop&q=60"
-    elif "suchár" in nazov_l or "piškót" in nazov_l or "sušienk" in nazov_l:
-        return "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=300&auto=format&fit=crop&q=60"
+    url = f"https://world.openfoodfacts.org/cgi/search.pl?search_terms={requests.utils.quote(query)}&search_simple=1&action=process&json=1"
+    headers = {'User-Agent': 'BezlepkovyLekarskyPredpis/1.0 (kontakt@example.com)'}
     
-    return "https://images.unsplash.com/photo-1584799015956-62776c5b966c?w=300&auto=format&fit=crop&q=60"
+    try:
+        response = requests.get(url, headers=headers, timeout=4)
+        if response.status_code == 200:
+            data = response.json()
+            products = data.get('products', [])
+            if products:
+                # Zoberieme prednú fotku produktu, ak existuje
+                img_url = products[0].get('image_front_url') or products[0].get('image_url')
+                if img_url:
+                    return img_url
+    except Exception as e:
+        print(f"Nepodarilo sa stiahnuť obrázok pre {query}: {e}")
+        
+    return None
 
 def main():
     print("Sťahujem aktuálny zoznam z MZ SR...")
@@ -139,6 +138,9 @@ def main():
         clean_nazov = nazov if nazov else "Bezlepková potravina"
         clean_vyrobca = vyrobca if pd.notna(vyrobca) else ""
         
+        print(ferencia := f"Hľadám reálny obrázok pre: {clean_vyrobca} - {clean_nazov}")
+        img_url = get_real_product_image(clean_nazov, clean_vyrobca)
+        
         item = {
             "sukl": sukl,
             "nazov": clean_nazov,
@@ -146,7 +148,7 @@ def main():
             "vyrobca": clean_vyrobca,
             "balenie": balenie if pd.notna(balenie) else "",
             "hmotnost_g": parse_weight_in_grams(f"{balenie} {doplnok}"),
-            "image": get_product_image_url(clean_nazov, clean_vyrobca)
+            "image": img_url # Sem sa uložia reálne nájdené fotky alebo None
         }
         
         if item["sukl"] and not any(x["sukl"] == item["sukl"] for x in cleaned_data):
@@ -156,7 +158,7 @@ def main():
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(cleaned_data, f, ensure_ascii=False, indent=2)
         
-    print(f"Uložených {len(cleaned_data)} reálnych produktov s obrázkami do {OUTPUT_FILE}")
+    print(f"Uložených {len(cleaned_data)} produktov do {OUTPUT_FILE}")
     
     if os.path.exists(temp_excel):
         os.remove(temp_excel)
