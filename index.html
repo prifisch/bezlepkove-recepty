@@ -249,15 +249,21 @@
                 let qty = cart[p.sukl] || 0;
                 let weightText = p.hmotnost_g > 0 ? '• Hmotnosť: ' + (p.hmotnost_g / 1000).toFixed(2) + ' kg' : '';
                 let doplnokHtml = p.doplnok ? '<span class="text-slate-500 font-normal">— ' + p.doplnok + '</span>' : '';
+                let imgSrc = p.image || 'https://images.unsplash.com/photo-1584799015956-62776c5b966c?w=300&auto=format&fit=crop&q=60';
                 
                 return '<div class="py-3.5 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 rounded-2xl border border-transparent hover:border-slate-200/60 transition-all">' +
-                    '<div class="space-y-1">' +
-                        '<div class="flex items-center gap-2">' +
-                            '<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-mono font-bold px-2.5 py-0.5 rounded-md">ŠÚKL: ' + p.sukl + '</span>' +
-                            '<span class="text-xs font-medium text-slate-500">' + (p.vyrobca || '') + '</span>' +
+                    '<div class="flex items-center gap-3.5">' +
+                        '<div class="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0 shadow-sm flex items-center justify-center">' +
+                            '<img src="' + imgSrc + '" alt="' + p.nazov + '" class="w-full h-full object-cover" onerror="this.onerror=null; this.src=\'https://images.unsplash.com/photo-1584799015956-62776c5b966c?w=300&auto=format&fit=crop&q=60\';">' +
                         '</div>' +
-                        '<h3 class="font-semibold text-slate-800 text-sm leading-snug">' + p.nazov + ' ' + doplnokHtml + '</h3>' +
-                        '<p class="text-xs text-slate-400">Balenie: <span class="text-slate-600">' + (p.balenie || 'Neuvedené') + '</span> ' + weightText + '</p>' +
+                        '<div class="space-y-1">' +
+                            '<div class="flex items-center gap-2">' +
+                                '<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-mono font-bold px-2.5 py-0.5 rounded-md">ŠÚKL: ' + p.sukl + '</span>' +
+                                '<span class="text-xs font-medium text-slate-500">' + (p.vyrobca || '') + '</span>' +
+                            '</div>' +
+                            '<h3 class="font-semibold text-slate-800 text-sm leading-snug">' + p.nazov + ' ' + doplnokHtml + '</h3>' +
+                            '<p class="text-xs text-slate-400">Balenie: <span class="text-slate-600">' + (p.balenie || 'Neuvedené') + '</span> ' + weightText + '</p>' +
+                        '</div>' +
                     '</div>' +
                     '<div class="flex items-center gap-2 self-end sm:self-center bg-slate-100/80 p-1.5 rounded-xl border border-slate-200/60">' +
                         '<button onclick="updateQuantity(\'' + p.sukl + '\', -1)" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-200 font-bold text-slate-700 shadow-sm flex items-center justify-center transition-all">-</button>' +
@@ -347,10 +353,14 @@
                     let product = allProducts.find(function(p) { return p.sukl === sukl; });
                     if (!product) return '';
                     let itemWeightKg = product.hmotnost_g ? ((product.hmotnost_g * qty) / 1000).toFixed(2) + ' kg' : '';
+                    let imgSrc = product.image || 'https://images.unsplash.com/photo-1584799015956-62776c5b966c?w=300&auto=format&fit=crop&q=60';
                     return '<div class="flex items-center justify-between bg-white p-2 rounded-xl border border-slate-200/60 text-xs">' +
-                        '<div class="pr-2 truncate">' +
-                            '<span class="font-bold text-slate-800">' + product.nazov + '</span>' +
-                            '<span class="text-slate-400 ml-1">(' + product.sukl + ')</span>' +
+                        '<div class="flex items-center gap-2 pr-2 truncate">' +
+                            '<img src="' + imgSrc + '" class="w-8 h-8 rounded-lg object-cover shrink-0">' +
+                            '<div>' +
+                                '<span class="font-bold text-slate-800">' + product.nazov + '</span>' +
+                                '<span class="text-slate-400 ml-1">(' + product.sukl + ')</span>' +
+                            '</div>' +
                         '</div>' +
                         '<div class="flex items-center gap-2 shrink-0">' +
                             '<span class="font-semibold text-emerald-700">' + qty + ' ks</span>' +
