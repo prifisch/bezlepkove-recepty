@@ -170,41 +170,41 @@
             } else {
                 const now = new Date();
                 const months = ["Január", "Február", "Marec", "Apríl", "Máj", "Jún", "Júl", "August", "September", "Október", "November", "December"];
-                document.getElementById('prescriptionPeriod').value = `${months[now.getMonth()]} ${now.getFullYear()}`;
+                document.getElementById('prescriptionPeriod').value = months[now.getMonth()] + ' ' + now.getFullYear();
             }
         }
 
         function setupLocalStorageListeners() {
-            ['patientName', 'patientId', 'doctorEmail', 'prescriptionPeriod'].forEach(id => {
-                document.getElementById(id).addEventListener('input', (e) => {
-                    localStorage.setItem(`v06_${id === 'prescriptionPeriod' ? 'period' : id}`, e.target.value);
+            ['patientName', 'patientId', 'doctorEmail', 'prescriptionPeriod'].forEach(function(id) {
+                document.getElementById(id).addEventListener('input', function(e) {
+                    let key = id === 'prescriptionPeriod' ? 'v06_period' : 'v06_' + id;
+                    localStorage.setItem(key, e.target.value);
                 });
             });
         }
 
         async function loadProducts() {
             try {
-                const response = await fetch('data/v06ce.json');
+                let response = await fetch('data/v06ce.json');
                 if (!response.ok) throw new Error('Nepodarilo sa načítať dáta.');
                 allProducts = await response.json();
                 filterAndRender();
             } catch (error) {
-                document.getElementById('productsList').innerHTML = `
-                    <div class="text-center py-12 text-amber-600 bg-amber-50 rounded-2xl border border-amber-100 p-6">
-                        <p class="font-bold text-base">Zatiaľ nie sú dostupné žiadne dáta.</p>
-                        <p class="text-xs text-slate-500 mt-1">Uistite sa, že GitHub Action úspešne prebehla v záložke Actions na GitHube.</p>
-                    </div>
-                `;
+                document.getElementById('productsList').innerHTML = 
+                    '<div class="text-center py-12 text-amber-600 bg-amber-50 rounded-2xl border border-amber-100 p-6">' +
+                        '<p class="font-bold text-base">Zatiaľ nie sú dostupné žiadne dáta.</p>' +
+                        '<p class="text-xs text-slate-500 mt-1">Uistite sa, že GitHub Action úspešne prebehla v záložke Actions na GitHube.</p>' +
+                    '</div>';
             }
         }
 
         function filterByCategory(category) {
             activeCategory = category;
             
-            document.querySelectorAll('.category-btn').forEach(btn => {
+            document.querySelectorAll('.category-btn').forEach(function(btn) {
                 btn.className = "category-btn bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold px-4 py-2 rounded-xl transition-all";
             });
-            const activeBtn = document.getElementById(`cat-${category}`);
+            let activeBtn = document.getElementById('cat-' + category);
             if (activeBtn) {
                 activeBtn.className = "category-btn bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all";
             }
@@ -213,10 +213,10 @@
         }
 
         function filterAndRender() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
+            let query = document.getElementById('searchInput').value.toLowerCase();
             
-            const filtered = allProducts.filter(p => {
-                const matchesText = (
+            let filtered = allProducts.filter(function(p) {
+                let matchesText = (
                     p.sukl.toLowerCase().includes(query) ||
                     p.nazov.toLowerCase().includes(query) ||
                     (p.doplnok && p.doplnok.toLowerCase().includes(query)) ||
@@ -226,7 +226,7 @@
                 if (!matchesText) return false;
                 if (activeCategory === 'vsetky') return true;
                 
-                const nazovL = (p.nazov + ' ' + (p.doplnok || '')).toLowerCase();
+                let nazovL = (p.nazov + ' ' + (p.doplnok || '')).toLowerCase();
                 if (activeCategory === 'muka') return nazovL.includes('múk') || nazovL.includes('zmes') || nazovL.includes('škrob');
                 if (activeCategory === 'chlieb') return nazovL.includes('chlieb') || nazovL.includes('pečivo') || nazovL.includes('žeml') || nazovL.includes('toast');
                 if (activeCategory === 'cestoviny') return nazovL.includes('cestovin') || nazovL.includes('rezanc') || nazovL.includes('vločk') || nazovL.includes('špaget');
@@ -239,46 +239,45 @@
         }
 
         function renderProducts(products) {
-            const container = document.getElementById('productsList');
+            let container = document.getElementById('productsList');
             if (products.length === 0) {
                 container.innerHTML = '<div class="text-center py-12 text-slate-400 text-sm">Žiadne položky nevyhovujú zadaným kritériám.</div>';
                 return;
             }
 
-            container.innerHTML = products.map(p => {
-                const qty = cart[p.sukl] || 0;
-                const weightText = p.hmotnost_g > 0 ? `• Hmotnosť: ${(p.hmotnost_g / 1000).toFixed(2)} kg` : '';
+            container.innerHTML = products.map(function(p) {
+                let qty = cart[p.sukl] || 0;
+                let weightText = p.hmotnost_g > 0 ? '• Hmotnosť: ' + (p.hmotnost_g / 1000).toFixed(2) + ' kg' : '';
+                let doplnokHtml = p.doplnok ? '<span class="text-slate-500 font-normal">— ' + p.doplnok + '</span>' : '';
                 
-                return `
-                    <div class="py-3.5 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 rounded-2xl border border-transparent hover:border-slate-200/60 transition-all">
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-2">
-                                <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-mono font-bold px-2.5 py-0.5 rounded-md">ŠÚKL: ${p.sukl}</span>
-                                <span class="text-xs font-medium text-slate-500">${p.vyrobca || ''}</span>
-                            </div>
-                            <h3 class="font-semibold text-slate-800 text-sm leading-snug">${p.nazov} ${p.doplnok ? '<span class="text-slate-500 font-normal">— ' + p.doplnok + '</span>' : ''}</h3>
-                            <p class="text-xs text-slate-400">Balenie: <span class="text-slate-600">${p.balenie || 'Neuvedené'}</span> ${weightText}</p>
-                        </div>
-                        <div class="flex items-center gap-2 self-end sm:self-center bg-slate-100/80 p-1.5 rounded-xl border border-slate-200/60">
-                            <button onclick="updateQuantity('${p.sukl}', -1)" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-200 font-bold text-slate-700 shadow-sm flex items-center justify-center transition-all">-</button>
-                            <span class="w-8 text-center text-sm font-bold text-slate-800">${qty}</span>
-                            <button onclick="updateQuantity('${p.sukl}', 1)" class="w-8 h-8 rounded-lg bg-emerald-600 hover:bg-emerald-700 font-bold text-white shadow-sm flex items-center justify-center transition-all">+</button>
-                        </div>
-                    </div>
-                `;
+                return '<div class="py-3.5 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 rounded-2xl border border-transparent hover:border-slate-200/60 transition-all">' +
+                    '<div class="space-y-1">' +
+                        '<div class="flex items-center gap-2">' +
+                            '<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-mono font-bold px-2.5 py-0.5 rounded-md">ŠÚKL: ' + p.sukl + '</span>' +
+                            '<span class="text-xs font-medium text-slate-500">' + (p.vyrobca || '') + '</span>' +
+                        '</div>' +
+                        '<h3 class="font-semibold text-slate-800 text-sm leading-snug">' + p.nazov + ' ' + doplnokHtml + '</h3>' +
+                        '<p class="text-xs text-slate-400">Balenie: <span class="text-slate-600">' + (p.balenie || 'Neuvedené') + '</span> ' + weightText + '</p>' +
+                    '</div>' +
+                    '<div class="flex items-center gap-2 self-end sm:self-center bg-slate-100/80 p-1.5 rounded-xl border border-slate-200/60">' +
+                        '<button onclick="updateQuantity(\'' + p.sukl + '\', -1)" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-200 font-bold text-slate-700 shadow-sm flex items-center justify-center transition-all">-</button>' +
+                        '<span class="w-8 text-center text-sm font-bold text-slate-800">' + qty + '</span>' +
+                        '<button onclick="updateQuantity(\'' + p.sukl + '\', 1)" class="w-8 h-8 rounded-lg bg-emerald-600 hover:bg-emerald-700 font-bold text-white shadow-sm flex items-center justify-center transition-all">+</button>' +
+                    '</div>' +
+                '</div>';
             }).join('');
         }
 
         function updateQuantity(sukl, change) {
-            const currentQty = cart[sukl] || 0;
-            const newQty = currentQty + change;
+            let currentQty = cart[sukl] || 0;
+            let newQty = currentQty + change;
             
             if (newQty < 0) return;
 
             if (change > 0) {
-                const product = allProducts.find(p => p.sukl === sukl);
+                let product = allProducts.find(function(p) { return p.sukl === sukl; });
                 if (product && product.hmotnost_g > 0) {
-                    const currentTotalWeightG = calculateTotalWeightG();
+                    let currentTotalWeightG = calculateTotalWeightG();
                     if (currentTotalWeightG + product.hmotnost_g > 9000) {
                         alert('Nemôžete pridať túto položku, pretože by ste prekročili maximálny povolený limit 9 kg na jeden predpis.');
                         return;
@@ -298,10 +297,13 @@
 
         function calculateTotalWeightG() {
             let totalG = 0;
-            for (const [sukl, qty] of Object.entries(cart)) {
-                const product = allProducts.find(p => p.sukl === sukl);
-                if (product && product.hmotnost_g) {
-                    totalG += product.hmotnost_g * qty;
+            for (let sukl in cart) {
+                if (cart.hasOwnProperty(sukl)) {
+                    let qty = cart[sukl];
+                    let product = allProducts.find(function(p) { return p.sukl === sukl; });
+                    if (product && product.hmotnost_g) {
+                        totalG += product.hmotnost_g * qty;
+                    }
                 }
             }
             return totalG;
@@ -309,7 +311,7 @@
 
         function toggleCartPreview() {
             isCartPreviewOpen = !isCartPreviewOpen;
-            const container = document.getElementById('cartPreviewContainer');
+            let container = document.getElementById('cartPreviewContainer');
             if (isCartPreviewOpen) {
                 container.classList.remove('hidden');
             } else {
@@ -318,49 +320,50 @@
         }
 
         function updateCartSummary() {
-            const totalG = calculateTotalWeightG();
-            const totalKg = totalG / 1000;
+            let totalG = calculateTotalWeightG();
+            let totalKg = totalG / 1000;
             let itemCount = 0;
-            for (const qty of Object.values(cart)) {
-                itemCount += qty;
+            for (let sukl in cart) {
+                if (cart.hasOwnProperty(sukl)) {
+                    itemCount += cart[sukl];
+                }
             }
 
-            document.getElementById('totalWeight').innerText = `${totalKg.toFixed(2)} kg`;
-            document.getElementById('toggleCartBtn').innerText = `Zobraziť košík (${itemCount})`;
+            document.getElementById('totalWeight').innerText = totalKg.toFixed(2) + ' kg';
+            document.getElementById('toggleCartBtn').innerText = 'Zobraziť košík (' + itemCount + ')';
 
-            // Vykreslenie položiek do rozbalovacieho zoznamu v košíku
-            const previewList = document.getElementById('cartPreviewList');
-            const entries = Object.entries(cart);
+            let previewList = document.getElementById('cartPreviewList');
+            let entries = Object.entries(cart);
             
             if (entries.length === 0) {
                 previewList.innerHTML = '<p class="text-xs text-slate-400 py-2 text-center">Zatiaľ nie sú vybrané žiadne položky.</p>';
                 if (isCartPreviewOpen) {
-                    toggleCartPreview(); // Zatvoriť ak je prázdny
+                    toggleCartPreview();
                 }
             } else {
-                previewList.innerHTML = entries.map(([sukl, qty]) => {
-                    const product = allProducts.find(p => p.sukl === sukl);
+                previewList.innerHTML = entries.map(function(entry) {
+                    let sukl = entry[0];
+                    let qty = entry[1];
+                    let product = allProducts.find(function(p) { return p.sukl === sukl; });
                     if (!product) return '';
-                    const itemWeightKg = product.hmotnost_g ? ((product.hmotnost_g * qty) / 1000).toFixed(2) + ' kg' : '';
-                    return `
-                        <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-slate-200/60 text-xs">
-                            <div class="pr-2 truncate">
-                                <span class="font-bold text-slate-800">${product.nazov}</span>
-                                <span class="text-slate-400 ml-1">(${product.sukl})</span>
-                            </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <span class="font-semibold text-emerald-700">${qty} ks</span>
-                                <span class="text-slate-400">${itemWeightKg}</span>
-                                <button onclick="updateQuantity('${sukl}', -1)" class="w-6 h-6 rounded bg-slate-100 hover:bg-red-100 hover:text-red-600 font-bold flex items-center justify-center transition-colors">×</button>
-                            </div>
-                        </div>
-                    `;
+                    let itemWeightKg = product.hmotnost_g ? ((product.hmotnost_g * qty) / 1000).toFixed(2) + ' kg' : '';
+                    return '<div class="flex items-center justify-between bg-white p-2 rounded-xl border border-slate-200/60 text-xs">' +
+                        '<div class="pr-2 truncate">' +
+                            '<span class="font-bold text-slate-800">' + product.nazov + '</span>' +
+                            '<span class="text-slate-400 ml-1">(' + product.sukl + ')</span>' +
+                        '</div>' +
+                        '<div class="flex items-center gap-2 shrink-0">' +
+                            '<span class="font-semibold text-emerald-700">' + qty + ' ks</span>' +
+                            '<span class="text-slate-400">' + itemWeightKg + '</span>' +
+                            '<button onclick="updateQuantity(\'' + sukl + '\', -1)" class="w-6 h-6 rounded bg-slate-100 hover:bg-red-100 hover:text-red-600 font-bold flex items-center justify-center transition-colors">×</button>' +
+                        '</div>' +
+                    '</div>';
                 }).join('');
             }
 
-            const percentage = Math.min((totalKg / 9.0) * 100, 100);
-            const progressBar = document.getElementById('weightProgressBar');
-            progressBar.style.width = `${percentage}%`;
+            let percentage = Math.min((totalKg / 9.0) * 100, 100);
+            let progressBar = document.getElementById('weightProgressBar');
+            progressBar.style.width = percentage + '%';
 
             if (totalKg > 8.5) {
                 progressBar.className = "bg-amber-500 h-full rounded-full transition-all duration-300";
@@ -369,23 +372,27 @@
             }
         }
 
-        document.getElementById('searchInput').addEventListener('input', () => {
+        document.getElementById('searchInput').addEventListener('input', function() {
             filterAndRender();
         });
 
         function openSummaryModal() {
-            const name = document.getElementById('patientName').value.trim() || '[Meno Priezvisko]';
-            const id = document.getElementById('patientId').value.trim() || '[Rodné číslo / Číslo poistenca]';
-            const period = document.getElementById('prescriptionPeriod').value.trim() || '[Obdobie]';
-            const email = document.getElementById('doctorEmail').value.trim();
+            let name = document.getElementById('patientName').value.trim() || '[Meno Priezvisko]';
+            let id = document.getElementById('patientId').value.trim() || '[Rodné číslo / Číslo poistenca]';
+            let period = document.getElementById('prescriptionPeriod').value.trim() || '[Obdobie]';
+            let email = document.getElementById('doctorEmail').value.trim();
 
             let itemsListText = '';
             let index = 1;
-            for (const [sukl, qty] of Object.entries(cart)) {
-                const product = allProducts.find(p => p.sukl === sukl);
-                if (product) {
-                    itemsListText += `${index}. ŠÚKL: ${product.sukl} | Názov: ${product.nazov} ${product.doplnok ? '— ' + product.doplnok : ''} | Počet balení: ${qty} ks\n`;
-                    index++;
+            for (let sukl in cart) {
+                if (cart.hasOwnProperty(sukl)) {
+                    let qty = cart[sukl];
+                    let product = allProducts.find(function(p) { return p.sukl === sukl; });
+                    if (product) {
+                        let doplnokText = product.doplnok ? '— ' + product.doplnok : '';
+                        itemsListText += index + '. ŠÚKL: ' + product.sukl + ' | Názov: ' + product.nazov + ' ' + doplnokText + ' | Počet balení: ' + qty + ' ks\n';
+                        index++;
+                    }
                 }
             }
 
@@ -394,31 +401,25 @@
                 return;
             }
 
-            const emailBody = 
-`Vážený pán doktor / Vážená pani doktorka,
-
-týmto by som Vás chcel(a) požiadať o vystavenie elektronického receptu na bezlepkové dietetické potraviny (kategória V06CE) na základe platného indikačného obmedzenia.
-
-Údaje pacienta:
-• Meno a priezvisko: ${name}
-• Rodné číslo / Číslo poistenca: ${id}
-• Požadované obdobie (mesiac/rok): ${period}
-
-Požadovaný zoznam potravín:
---------------------------------------------------
-${itemsListText}--------------------------------------------------
-
-Vopred veľmi pekne ďakujem za ochotu a vybavenie receptu.
-
-S pozdravom,
-
-${name}`;
+            let emailBody = "Vážený pán doktor / Vážená pani doktorka,\n\n" +
+                "týmto by som Vás chcel(a) požiadať o vystavenie elektronického receptu na bezlepkové dietetické potraviny (kategória V06CE) na základe platného indikačného obmedzenia.\n\n" +
+                "Údaje pacienta:\n" +
+                "• Meno a priezvisko: " + name + "\n" +
+                "• Rodné číslo / Číslo poistenca: " + id + "\n" +
+                "• Požadované obdobie (mesiac/rok): " + period + "\n\n" +
+                "Požadovaný zoznam potravín:\n" +
+                "--------------------------------------------------\n" +
+                itemsListText +
+                "--------------------------------------------------\n\n" +
+                "Vopred veľmi pekne ďakujem za ochotu a vybavenie receptu.\n\n" +
+                "S pozdravom,\n\n" +
+                name;
 
             document.getElementById('emailOutput').value = emailBody;
 
-            const subject = encodeURIComponent(`Žiadosť o predpis bezlepkových potravín (V06CE) – ${name} – ${period}`);
-            const body = encodeURIComponent(emailBody);
-            document.getElementById('mailtoLink').href = `mailto:${email}?subject=${subject}&body=${body}`;
+            let subject = encodeURIComponent('Žiadosť o predpis bezlepkových potravín (V06CE) – ' + name + ' – ' + period);
+            let body = encodeURIComponent(emailBody);
+            document.getElementById('mailtoLink').href = 'mailto:' + email + '?subject=' + subject + '&body=' + body;
 
             document.getElementById('summaryModal').classList.remove('hidden');
         }
@@ -428,7 +429,7 @@ ${name}`;
         }
 
         function copyToClipboard() {
-            const textarea = document.getElementById('emailOutput');
+            let textarea = document.getElementById('emailOutput');
             textarea.select();
             document.execCommand('copy');
             alert('Text e-mailu bol skopírovaný do schránky!');
