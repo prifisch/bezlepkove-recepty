@@ -58,19 +58,21 @@ def main():
 
     # Ak sme v sekcii V06CE a narazíme na novú hlavnú kategóriu, ukončíme zber
     if in_v06ce_section:
-      if any(
-          cat in row_str
-          for cat in [
-              "V06A",
-              "V06B",
-              "V06C",
-              "V06D",
-              "V07",
-              "V08",
-              "A01",
-              "B01",
-              "J01",
-          ]
+      if (
+          any(
+              cat in row_str
+              for cat in [
+                  "V06A",
+                  "V06B",
+                  "V06C",
+                  "V06D",
+                  "V07",
+                  "V08",
+                  "A01",
+                  "B01",
+                  "J01",
+              ]
+          )
           and "V06CE" not in row_str
       ):
         in_v06ce_section = False
