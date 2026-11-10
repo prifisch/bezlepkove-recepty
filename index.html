@@ -238,6 +238,33 @@
             renderProducts(filtered);
         }
 
+        // Pomocná funkcia pre štýlovú a stabilnú vizuálnu ikonu produktu
+        function getProductVisual(nazov) {
+            let l = (nazov || '').toLowerCase();
+            if (l.includes('múk') || l.includes('zmes') || l.includes('škrob')) {
+                return {
+                    bg: 'bg-amber-50 text-amber-600 border-amber-200',
+                    icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>'
+                };
+            }
+            if (l.includes('chlieb') || l.includes('pečivo') || l.includes('žeml') || l.includes('toast')) {
+                return {
+                    bg: 'bg-orange-50 text-orange-600 border-orange-200',
+                    icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>'
+                };
+            }
+            if (l.includes('cestovin') || l.includes('rezanc') || l.includes('špaget')) {
+                return {
+                    bg: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                    icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>'
+                };
+            }
+            return {
+                bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>'
+            };
+        }
+
         function renderProducts(products) {
             let container = document.getElementById('productsList');
             if (products.length === 0) {
@@ -249,13 +276,11 @@
                 let qty = cart[p.sukl] || 0;
                 let weightText = p.hmotnost_g > 0 ? '• Hmotnosť: ' + (p.hmotnost_g / 1000).toFixed(2) + ' kg' : '';
                 let doplnokHtml = p.doplnok ? '<span class="text-slate-500 font-normal">— ' + p.doplnok + '</span>' : '';
-                let imgSrc = p.image || 'https://images.unsplash.com/photo-1584799015956-62776c5b966c?w=300&auto=format&fit=crop&q=60';
+                let visual = getProductVisual(p.nazov);
                 
                 return '<div class="py-3.5 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 rounded-2xl border border-transparent hover:border-slate-200/60 transition-all">' +
                     '<div class="flex items-center gap-3.5">' +
-                        '<div class="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0 shadow-sm flex items-center justify-center">' +
-                            '<img src="' + imgSrc + '" alt="' + p.nazov + '" class="w-full h-full object-cover" onerror="this.onerror=null; this.src=\'https://images.unsplash.com/photo-1584799015956-62776c5b966c?w=300&auto=format&fit=crop&q=60\';">' +
-                        '</div>' +
+                        '<div class="w-14 h-14 rounded-2xl border ' + visual.bg + ' flex items-center justify-center shrink-0 shadow-sm">' + visual.icon + '</div>' +
                         '<div class="space-y-1">' +
                             '<div class="flex items-center gap-2">' +
                                 '<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-mono font-bold px-2.5 py-0.5 rounded-md">ŠÚKL: ' + p.sukl + '</span>' +
@@ -353,10 +378,12 @@
                     let product = allProducts.find(function(p) { return p.sukl === sukl; });
                     if (!product) return '';
                     let itemWeightKg = product.hmotnost_g ? ((product.hmotnost_g * qty) / 1000).toFixed(2) + ' kg' : '';
-                    let imgSrc = product.image || 'https://images.unsplash.com/photo-1584799015956-62776c5b966c?w=300&auto=format&fit=crop&q=60';
+                    let visual = getProductVisual(product.nazov);
                     return '<div class="flex items-center justify-between bg-white p-2 rounded-xl border border-slate-200/60 text-xs">' +
                         '<div class="flex items-center gap-2 pr-2 truncate">' +
-                            '<img src="' + imgSrc + '" class="w-8 h-8 rounded-lg object-cover shrink-0">' +
+                            '<div class="w-8 h-8 rounded-lg border ' + visual.bg + ' flex items-center justify-center shrink-0">' +
+                                '<div class="transform scale-75">' + visual.icon + '</div>' +
+                            '</div>' +
                             '<div>' +
                                 '<span class="font-bold text-slate-800">' + product.nazov + '</span>' +
                                 '<span class="text-slate-400 ml-1">(' + product.sukl + ')</span>' +
