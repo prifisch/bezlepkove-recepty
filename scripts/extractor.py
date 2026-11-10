@@ -31,7 +31,6 @@ def main():
         f.write(response.content)
     
     print("Načítavam dáta a detegujem hlavičku tabuľky...")
-    # Načítame surový excel bez hlavičky, aby sme našli riadok, kde sa nachádza tabuľka
     df_raw = pd.read_excel(temp_excel, sheet_name=0, header=None)
     
     header_row_idx = 0
@@ -43,18 +42,15 @@ def main():
             
     print(f"Hlavička nájdená na riadku index: {header_row_idx}")
     
-    # Načítame dáta so správnym riadkom hlavičky
     df = pd.read_excel(temp_excel, sheet_name=0, header=header_row_idx)
     
-    # Filtrujeme riadky, kde sa nachádza kategória V06CE v akomkoľvek stĺpci
     mask = df.astype(str).apply(lambda col: col.str.contains("V06CE", na=False)).any(axis=1)
     df_v06ce = df[mask].copy()
     
-    print(Nájdených {len(df_v06ce)} položiek s kategóriou V06CE.")
+    print(f"Nájdených {len(df_v06ce)} položiek s kategóriou V06CE.")
     
     cleaned_data = []
     for idx, row in df_v06ce.iterrows():
-        # Pomocná funkcija na flexibilné vyhľadanie hodnoty v stĺpcoch
         def get_col(*names):
             for name in names:
                 for col in df.columns:
@@ -70,7 +66,6 @@ def main():
         vyrobca = get_col("Držiteľ", "Výrobca", "Drzitel")
         balenie = get_col("Balenie", "Veľkosť", "Velkost")
 
-        # Fallback pre kód ŠÚKL, ak sa názov stĺpca líši
         if not sukl or sukl == "nan":
             for val in row.values:
                 val_str = str(val).strip()
