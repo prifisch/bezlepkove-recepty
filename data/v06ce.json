@@ -1,1 +1,466 @@
-[]
+[
+  {
+    "sukl": "D1403",
+    "nazov": "Mix For Flour",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "plv 1x1000 g",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1492",
+    "nazov": "Hrachová múka",
+    "doplnok": "plv 1x500 g",
+    "vyrobca": "",
+    "balenie": "plv 1x500 g",
+    "hmotnost_g": 500
+  },
+  {
+    "sukl": "D1518",
+    "nazov": "Hrachová krupica",
+    "doplnok": "plv 1x500 g",
+    "vyrobca": "",
+    "balenie": "plv 1x500 g",
+    "hmotnost_g": 500
+  },
+  {
+    "sukl": "D1072",
+    "nazov": "Mehl Farine -múčna zmes bezgluténová univerzálna",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "Mehl Farine -múčna zmes bezgluténová univerzálna",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1402",
+    "nazov": "Mix For Cake",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "plv 1x1000 g",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1404",
+    "nazov": "Mix Free Univerzal",
+    "doplnok": "plv 1x500 g",
+    "vyrobca": "",
+    "balenie": "plv 1x500 g",
+    "hmotnost_g": 500
+  },
+  {
+    "sukl": "D0170",
+    "nazov": "PROMIX®CH, bezgluténová múčna  zmes na  chlieb",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "PROMIX®CH, bezgluténová múčna  zmes na  chlieb",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D0171",
+    "nazov": "PROMIX®PK, bezgluténová múčna zmes na jemné pečivo",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "PROMIX®PK, bezgluténová múčna zmes na jemné pečivo",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1029",
+    "nazov": "Universal mix - bezgluténová univerzálna zmes na múčne jedlá",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "Universal mix - bezgluténová univerzálna zmes na múčne jedlá",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D0386",
+    "nazov": "Bezlepková sypká zmes Mantler bez laktózy",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "plv 1x1000 g",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1226",
+    "nazov": "Mix it- Univerzal",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "plv 1x1000 g",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1154",
+    "nazov": "Pohánková múka hladká bezgluténová zo slovenskej pohánky",
+    "doplnok": "plv 1x500 g",
+    "vyrobca": "",
+    "balenie": "Pohánková múka hladká bezgluténová zo slovenskej pohánky",
+    "hmotnost_g": 500
+  },
+  {
+    "sukl": "D0685",
+    "nazov": "Jizerka - bezlepková zmes \"ZELENÁ\"",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "plv 1x1000 g",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1155",
+    "nazov": "Pohánková krupica bezgluténové zo slovenskej pohánky",
+    "doplnok": "plv 1x500 g",
+    "vyrobca": "",
+    "balenie": "Pohánková krupica bezgluténové zo slovenskej pohánky",
+    "hmotnost_g": 500
+  },
+  {
+    "sukl": "D0976",
+    "nazov": "Cake Mix - bezgluténová piškótová zmes",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "Cake Mix - bezgluténová piškótová zmes",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1280",
+    "nazov": "Rolls mix - bezgluténová múčna zmes na rožky",
+    "doplnok": "plv 1x500g",
+    "vyrobca": "",
+    "balenie": "Rolls mix - bezgluténová múčna zmes na rožky",
+    "hmotnost_g": 500
+  },
+  {
+    "sukl": "D1401",
+    "nazov": "Mix For Bread",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "plv 1x1000 g",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D0974",
+    "nazov": "Mix per Pane - zmes na chlieb",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "plv 1x1000 g",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1030",
+    "nazov": "Bread mix white - bezgluténová zmes na svetlý chlieb a pečivo",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "Bread mix white - bezgluténová zmes na svetlý chlieb a pečivo",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D0272",
+    "nazov": "Knedľa bezgluténová v prášku",
+    "doplnok": "plv 1x250 g",
+    "vyrobca": "",
+    "balenie": "Knedľa bezgluténová v prášku",
+    "hmotnost_g": 250
+  },
+  {
+    "sukl": "D0172",
+    "nazov": "PROMIX®UNI, bezgluténová múčna zmes univerzálna",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "PROMIX®UNI, bezgluténová múčna zmes univerzálna",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D0173",
+    "nazov": "PROMIX®T, bezgluténová múčna zmes univerzálna tmavá",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "PROMIX®T, bezgluténová múčna zmes univerzálna tmavá",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1031",
+    "nazov": "Bread mix dark - bezgluténová zmes na tmavý chlieb a pečivo s pohánkou",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "Bread mix dark - bezgluténová zmes na tmavý chlieb a pečivo s pohánkou",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D0872",
+    "nazov": "PROMIX ®Alfa,  bezgluténová múčna zmes univerzálna mineralizovaná",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "PROMIX ®Alfa,  bezgluténová múčna zmes univerzálna mineralizovaná",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1073",
+    "nazov": "Mix C  Patisserie - múčna zmes bezgluténová",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "Mix C  Patisserie - múčna zmes bezgluténová",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D0873",
+    "nazov": "PROMIX® Beta, racionálna  bezgluténová múka mineralizovaná",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "PROMIX® Beta, racionálna  bezgluténová múka mineralizovaná",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D0194",
+    "nazov": "PROMIX®FORTE, bezgluténová múčna zmes silná",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "PROMIX®FORTE, bezgluténová múčna zmes silná",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D0337",
+    "nazov": "PROMIX-UNI komfort - univerzálna bezlepková zmes pre automatické pečenie",
+    "doplnok": "plv 1x400 g",
+    "vyrobca": "",
+    "balenie": "plv 1x400 g",
+    "hmotnost_g": 400
+  },
+  {
+    "sukl": "D0973",
+    "nazov": "Bakery mix - bezgluténová zmes na kysnuté cesto",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "Bakery mix - bezgluténová zmes na kysnuté cesto",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1074",
+    "nazov": "Mix per Pane Integrale - zmes na chlieb, bezgluténová",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "Mix per Pane Integrale - zmes na chlieb, bezgluténová",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D0335",
+    "nazov": "Muffin bezgluténový v prášku",
+    "doplnok": "plv 1x300 g",
+    "vyrobca": "",
+    "balenie": "Muffin bezgluténový v prášku",
+    "hmotnost_g": 300
+  },
+  {
+    "sukl": "D0298",
+    "nazov": "Mix B - bezlepková zmes na prípravu chleba",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "plv 1x1000 g",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D1104",
+    "nazov": "Halušky bezgluténové v prášku",
+    "doplnok": "plv 1x300 g",
+    "vyrobca": "",
+    "balenie": "Halušky bezgluténové v prášku",
+    "hmotnost_g": 300
+  },
+  {
+    "sukl": "D0657",
+    "nazov": "Mix it Dunkel - chlebová zmes tmavá",
+    "doplnok": "plv 1x1000 g",
+    "vyrobca": "",
+    "balenie": "plv 1x1000 g",
+    "hmotnost_g": 1000
+  },
+  {
+    "sukl": "D0175",
+    "nazov": "KRUPICA bezgluténová",
+    "doplnok": "plv 1x500 g",
+    "vyrobca": "",
+    "balenie": "KRUPICA bezgluténová",
+    "hmotnost_g": 500
+  },
+  {
+    "sukl": "D0658",
+    "nazov": "Paniermehl - breadcrumbs - strúhanka bez lepku",
+    "doplnok": "plv 1x300 g",
+    "vyrobca": "",
+    "balenie": "plv 1x300 g",
+    "hmotnost_g": 300
+  },
+  {
+    "sukl": "D0254",
+    "nazov": "Strúhanka bezgluténová pečivová",
+    "doplnok": "plv 1x350 g",
+    "vyrobca": "",
+    "balenie": "Strúhanka bezgluténová pečivová",
+    "hmotnost_g": 350
+  },
+  {
+    "sukl": "D1559",
+    "nazov": "Pohánkový perník, bezgluténová prášková zmes",
+    "doplnok": "plv 1 x 500 g",
+    "vyrobca": "",
+    "balenie": "Pohánkový perník, bezgluténová prášková zmes",
+    "hmotnost_g": 500
+  },
+  {
+    "sukl": "D1318",
+    "nazov": "Pancakes&Waffles - bezgluténová sypká zmes na prípravu  vaflí alebo palaciniek",
+    "doplnok": "plv 1x350 g",
+    "vyrobca": "",
+    "balenie": "Pancakes&Waffles - bezgluténová sypká zmes na prípravu  vaflí alebo palaciniek",
+    "hmotnost_g": 350
+  },
+  {
+    "sukl": "D0977",
+    "nazov": "Fine Mix - bezgluténová zmes na perníky",
+    "doplnok": "plv 1x300 g",
+    "vyrobca": "",
+    "balenie": "Fine Mix - bezgluténová zmes na perníky",
+    "hmotnost_g": 300
+  },
+  {
+    "sukl": "DP026",
+    "nazov": "Bezlepkové cestoviny Schär",
+    "doplnok": "1x250 g",
+    "vyrobca": "",
+    "balenie": "1x250 g",
+    "hmotnost_g": 250
+  },
+  {
+    "sukl": "D0340",
+    "nazov": "MUESLI bezlepkové granulované",
+    "doplnok": "1x200 g",
+    "vyrobca": "",
+    "balenie": "MUESLI bezlepkové granulované",
+    "hmotnost_g": 200
+  },
+  {
+    "sukl": "D0180",
+    "nazov": "PROCEL bezgluténové cestoviny",
+    "doplnok": "1x250 g",
+    "vyrobca": "",
+    "balenie": "PROCEL bezgluténové cestoviny",
+    "hmotnost_g": 250
+  },
+  {
+    "sukl": "D0939",
+    "nazov": "Maestro Vital, chlieb bezgluténový viaczrnný obohatený vápnikom krájaný",
+    "doplnok": "1x350 g",
+    "vyrobca": "",
+    "balenie": "Maestro Vital, chlieb bezgluténový viaczrnný obohatený vápnikom krájaný",
+    "hmotnost_g": 350
+  },
+  {
+    "sukl": "D0942",
+    "nazov": "Fruit Müsli, müsli s ovocím bezgluténové",
+    "doplnok": "1x375 g",
+    "vyrobca": "",
+    "balenie": "Fruit Müsli, müsli s ovocím bezgluténové",
+    "hmotnost_g": 375
+  },
+  {
+    "sukl": "D0874",
+    "nazov": "LINSI chlieb s ľanom bezgluténový",
+    "doplnok": "1x300 g",
+    "vyrobca": "",
+    "balenie": "LINSI chlieb s ľanom bezgluténový",
+    "hmotnost_g": 300
+  },
+  {
+    "sukl": "D0876",
+    "nazov": "Parená knedľa bezgluténová",
+    "doplnok": "1x320 g",
+    "vyrobca": "",
+    "balenie": "Parená knedľa bezgluténová",
+    "hmotnost_g": 320
+  },
+  {
+    "sukl": "D0940",
+    "nazov": "Maestro Classic, chlieb bezgluténový krájaný",
+    "doplnok": "1x300 g",
+    "vyrobca": "",
+    "balenie": "Maestro Classic, chlieb bezgluténový krájaný",
+    "hmotnost_g": 300
+  },
+  {
+    "sukl": "D0941",
+    "nazov": "Maestro Cereale, chlieb bezgluténový viaczrnný krájaný",
+    "doplnok": "1x300 g",
+    "vyrobca": "",
+    "balenie": "Maestro Cereale, chlieb bezgluténový viaczrnný krájaný",
+    "hmotnost_g": 300
+  },
+  {
+    "sukl": "DP024",
+    "nazov": "Chlieb bezgluténový",
+    "doplnok": "1x360 g",
+    "vyrobca": "",
+    "balenie": "Chlieb bezgluténový",
+    "hmotnost_g": 360
+  },
+  {
+    "sukl": "D0877",
+    "nazov": "Parené buchty bezgluténové s lekvárom",
+    "doplnok": "1x320 g",
+    "vyrobca": "",
+    "balenie": "Parené buchty bezgluténové s lekvárom",
+    "hmotnost_g": 320
+  },
+  {
+    "sukl": "D0978",
+    "nazov": "Panfette- integrale- celozrnný chlieb krájaný",
+    "doplnok": "1x340 g",
+    "vyrobca": "",
+    "balenie": "Panfette- integrale- celozrnný chlieb krájaný",
+    "hmotnost_g": 340
+  },
+  {
+    "sukl": "D0661",
+    "nazov": "Ciabatta Rustica - pečivo bežné bezgluténové viaczrnné",
+    "doplnok": "1x200 g",
+    "vyrobca": "",
+    "balenie": "Ciabatta Rustica - pečivo bežné bezgluténové viaczrnné",
+    "hmotnost_g": 200
+  },
+  {
+    "sukl": "D0875",
+    "nazov": "Panini, Hamburger - bezgluténové žemle bez lepku",
+    "doplnok": "1x300 g",
+    "vyrobca": "",
+    "balenie": "Panini, Hamburger - bezgluténové žemle bez lepku",
+    "hmotnost_g": 300
+  },
+  {
+    "sukl": "D0979",
+    "nazov": "Panfette- krájaný chlieb biely",
+    "doplnok": "1x300 g",
+    "vyrobca": "",
+    "balenie": "1x300 g",
+    "hmotnost_g": 300
+  },
+  {
+    "sukl": "D0293",
+    "nazov": "Bon Matin - bezlepkové sladké žemle",
+    "doplnok": "1x200 g",
+    "vyrobca": "",
+    "balenie": "Bon Matin - bezlepkové sladké žemle",
+    "hmotnost_g": 200
+  },
+  {
+    "sukl": "D0479",
+    "nazov": "Pain Campagnard - bezlepkový domáci chlieb",
+    "doplnok": "1x240 g",
+    "vyrobca": "",
+    "balenie": "Pain Campagnard - bezlepkový domáci chlieb",
+    "hmotnost_g": 240
+  },
+  {
+    "sukl": "D0660",
+    "nazov": "Ciabatta  - predpečené bezlepkové  žemle",
+    "doplnok": "1x200 g",
+    "vyrobca": "",
+    "balenie": "Ciabatta  - predpečené bezlepkové  žemle",
+    "hmotnost_g": 200
+  }
+]
