@@ -121,5 +121,322 @@
 
                 <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
                     <button onclick="openSummaryModal()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl text-sm shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2">
-                        <span>Skontrolovať a vygener
-                            
+                        <span>Skontrolovať a vygenerovať e-mail</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modálne okno so zhrnutím a generovaním e-mailu -->
+    <div id="summaryModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto border border-slate-100">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 class="text-xl font-extrabold text-slate-900">Návrh e-mailu pre lekársku ambulanciu</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Skontrolujte si vybrané položky a skopírujte text do svojho e-mailu.</p>
+                </div>
+                <button onclick="closeSummaryModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center font-bold text-lg transition-colors">&times;</button>
+            </div>
+
+            <textarea id="emailOutput" rows="12" class="w-full font-mono text-xs bg-slate-50 border border-slate-300 rounded-2xl p-4 text-slate-700 focus:outline-none mb-6 shadow-inner" readonly></textarea>
+
+            <div class="flex flex-col sm:flex-row justify-end gap-3">
+                <button onclick="copyToClipboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-3 rounded-xl text-sm transition-all flex items-center justify-center gap-2">
+                    📋 Kopírovať do schránky
+                </button>
+                <a id="mailtoLink" href="#" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl text-sm text-center shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2">
+                    ✉️ Otvoriť v e-mailovom kliente
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScriptová logika -->
+    <script>
+        let allProducts = [];
+        let cart = {}; 
+        let activeCategory = 'vsetky';
+        let isCartPreviewOpen = false;
+
+        function loadPatientData() {
+            document.getElementById('patientName').value = localStorage.getItem('v06_patientName') || '';
+            document.getElementById('patientId').value = localStorage.getItem('v06_patientId') || '';
+            document.getElementById('doctorEmail').value = localStorage.getItem('v06_doctorEmail') || '';
+            
+            const savedPeriod = localStorage.getItem('v06_period');
+            if (savedPeriod) {
+                document.getElementById('prescriptionPeriod').value = savedPeriod;
+            } else {
+                const now = new Date();
+                const months = ["Január", "Február", "Marec", "Apríl", "Máj", "Jún", "Júl", "August", "September", "Október", "November", "December"];
+                document.getElementById('prescriptionPeriod').value = `${months[now.getMonth()]} ${now.getFullYear()}`;
+            }
+        }
+
+        function setupLocalStorageListeners() {
+            ['patientName', 'patientId', 'doctorEmail', 'prescriptionPeriod'].forEach(id => {
+                document.getElementById(id).addEventListener('input', (e) => {
+                    localStorage.setItem(`v06_${id === 'prescriptionPeriod' ? 'period' : id}`, e.target.value);
+                });
+            });
+        }
+
+        async function loadProducts() {
+            try {
+                const response = await fetch('data/v06ce.json');
+                if (!response.ok) throw new Error('Nepodarilo sa načítať dáta.');
+                allProducts = await response.json();
+                filterAndRender();
+            } catch (error) {
+                document.getElementById('productsList').innerHTML = `
+                    <div class="text-center py-12 text-amber-600 bg-amber-50 rounded-2xl border border-amber-100 p-6">
+                        <p class="font-bold text-base">Zatiaľ nie sú dostupné žiadne dáta.</p>
+                        <p class="text-xs text-slate-500 mt-1">Uistite sa, že GitHub Action úspešne prebehla v záložke Actions na GitHube.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function filterByCategory(category) {
+            activeCategory = category;
+            
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.className = "category-btn bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold px-4 py-2 rounded-xl transition-all";
+            });
+            const activeBtn = document.getElementById(`cat-${category}`);
+            if (activeBtn) {
+                activeBtn.className = "category-btn bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all";
+            }
+
+            filterAndRender();
+        }
+
+        function filterAndRender() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = allProducts.filter(p => {
+                const matchesText = (
+                    p.sukl.toLowerCase().includes(query) ||
+                    p.nazov.toLowerCase().includes(query) ||
+                    (p.doplnok && p.doplnok.toLowerCase().includes(query)) ||
+                    (p.vyrobca && p.vyrobca.toLowerCase().includes(query))
+                );
+
+                if (!matchesText) return false;
+                if (activeCategory === 'vsetky') return true;
+                
+                const nazovL = (p.nazov + ' ' + (p.doplnok || '')).toLowerCase();
+                if (activeCategory === 'muka') return nazovL.includes('múk') || nazovL.includes('zmes') || nazovL.includes('škrob');
+                if (activeCategory === 'chlieb') return nazovL.includes('chlieb') || nazovL.includes('pečivo') || nazovL.includes('žeml') || nazovL.includes('toast');
+                if (activeCategory === 'cestoviny') return nazovL.includes('cestovin') || nazovL.includes('rezanc') || nazovL.includes('vločk') || nazovL.includes('špaget');
+                if (activeCategory === 'suchare') return nazovL.includes('suchár') || nazovL.includes('piškót') || nazovL.includes('sušienk') || nazovL.includes('tyčink');
+
+                return true;
+            });
+
+            renderProducts(filtered);
+        }
+
+        function renderProducts(products) {
+            const container = document.getElementById('productsList');
+            if (products.length === 0) {
+                container.innerHTML = '<div class="text-center py-12 text-slate-400 text-sm">Žiadne položky nevyhovujú zadaným kritériám.</div>';
+                return;
+            }
+
+            container.innerHTML = products.map(p => {
+                const qty = cart[p.sukl] || 0;
+                const weightText = p.hmotnost_g > 0 ? `• Hmotnosť: ${(p.hmotnost_g / 1000).toFixed(2)} kg` : '';
+                
+                return `
+                    <div class="py-3.5 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 rounded-2xl border border-transparent hover:border-slate-200/60 transition-all">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-mono font-bold px-2.5 py-0.5 rounded-md">ŠÚKL: ${p.sukl}</span>
+                                <span class="text-xs font-medium text-slate-500">${p.vyrobca || ''}</span>
+                            </div>
+                            <h3 class="font-semibold text-slate-800 text-sm leading-snug">${p.nazov} ${p.doplnok ? '<span class="text-slate-500 font-normal">— ' + p.doplnok + '</span>' : ''}</h3>
+                            <p class="text-xs text-slate-400">Balenie: <span class="text-slate-600">${p.balenie || 'Neuvedené'}</span> ${weightText}</p>
+                        </div>
+                        <div class="flex items-center gap-2 self-end sm:self-center bg-slate-100/80 p-1.5 rounded-xl border border-slate-200/60">
+                            <button onclick="updateQuantity('${p.sukl}', -1)" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-200 font-bold text-slate-700 shadow-sm flex items-center justify-center transition-all">-</button>
+                            <span class="w-8 text-center text-sm font-bold text-slate-800">${qty}</span>
+                            <button onclick="updateQuantity('${p.sukl}', 1)" class="w-8 h-8 rounded-lg bg-emerald-600 hover:bg-emerald-700 font-bold text-white shadow-sm flex items-center justify-center transition-all">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateQuantity(sukl, change) {
+            const currentQty = cart[sukl] || 0;
+            const newQty = currentQty + change;
+            
+            if (newQty < 0) return;
+
+            if (change > 0) {
+                const product = allProducts.find(p => p.sukl === sukl);
+                if (product && product.hmotnost_g > 0) {
+                    const currentTotalWeightG = calculateTotalWeightG();
+                    if (currentTotalWeightG + product.hmotnost_g > 9000) {
+                        alert('Nemôžete pridať túto položku, pretože by ste prekročili maximálny povolený limit 9 kg na jeden predpis.');
+                        return;
+                    }
+                }
+            }
+
+            if (newQty === 0) {
+                delete cart[sukl];
+            } else {
+                cart[sukl] = newQty;
+            }
+
+            filterAndRender();
+            updateCartSummary();
+        }
+
+        function calculateTotalWeightG() {
+            let totalG = 0;
+            for (const [sukl, qty] of Object.entries(cart)) {
+                const product = allProducts.find(p => p.sukl === sukl);
+                if (product && product.hmotnost_g) {
+                    totalG += product.hmotnost_g * qty;
+                }
+            }
+            return totalG;
+        }
+
+        function toggleCartPreview() {
+            isCartPreviewOpen = !isCartPreviewOpen;
+            const container = document.getElementById('cartPreviewContainer');
+            if (isCartPreviewOpen) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function updateCartSummary() {
+            const totalG = calculateTotalWeightG();
+            const totalKg = totalG / 1000;
+            let itemCount = 0;
+            for (const qty of Object.values(cart)) {
+                itemCount += qty;
+            }
+
+            document.getElementById('totalWeight').innerText = `${totalKg.toFixed(2)} kg`;
+            document.getElementById('toggleCartBtn').innerText = `Zobraziť košík (${itemCount})`;
+
+            // Vykreslenie položiek do rozbalovacieho zoznamu v košíku
+            const previewList = document.getElementById('cartPreviewList');
+            const entries = Object.entries(cart);
+            
+            if (entries.length === 0) {
+                previewList.innerHTML = '<p class="text-xs text-slate-400 py-2 text-center">Zatiaľ nie sú vybrané žiadne položky.</p>';
+                if (isCartPreviewOpen) {
+                    toggleCartPreview(); // Zatvoriť ak je prázdny
+                }
+            } else {
+                previewList.innerHTML = entries.map(([sukl, qty]) => {
+                    const product = allProducts.find(p => p.sukl === sukl);
+                    if (!product) return '';
+                    const itemWeightKg = product.hmotnost_g ? ((product.hmotnost_g * qty) / 1000).toFixed(2) + ' kg' : '';
+                    return `
+                        <div class="flex items-center justify-between bg-white p-2 rounded-xl border border-slate-200/60 text-xs">
+                            <div class="pr-2 truncate">
+                                <span class="font-bold text-slate-800">${product.nazov}</span>
+                                <span class="text-slate-400 ml-1">(${product.sukl})</span>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <span class="font-semibold text-emerald-700">${qty} ks</span>
+                                <span class="text-slate-400">${itemWeightKg}</span>
+                                <button onclick="updateQuantity('${sukl}', -1)" class="w-6 h-6 rounded bg-slate-100 hover:bg-red-100 hover:text-red-600 font-bold flex items-center justify-center transition-colors">×</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const percentage = Math.min((totalKg / 9.0) * 100, 100);
+            const progressBar = document.getElementById('weightProgressBar');
+            progressBar.style.width = `${percentage}%`;
+
+            if (totalKg > 8.5) {
+                progressBar.className = "bg-amber-500 h-full rounded-full transition-all duration-300";
+            } else {
+                progressBar.className = "bg-emerald-600 h-full rounded-full transition-all duration-300";
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', () => {
+            filterAndRender();
+        });
+
+        function openSummaryModal() {
+            const name = document.getElementById('patientName').value.trim() || '[Meno Priezvisko]';
+            const id = document.getElementById('patientId').value.trim() || '[Rodné číslo / Číslo poistenca]';
+            const period = document.getElementById('prescriptionPeriod').value.trim() || '[Obdobie]';
+            const email = document.getElementById('doctorEmail').value.trim();
+
+            let itemsListText = '';
+            let index = 1;
+            for (const [sukl, qty] of Object.entries(cart)) {
+                const product = allProducts.find(p => p.sukl === sukl);
+                if (product) {
+                    itemsListText += `${index}. ŠÚKL: ${product.sukl} | Názov: ${product.nazov} ${product.doplnok ? '— ' + product.doplnok : ''} | Počet balení: ${qty} ks\n`;
+                    index++;
+                }
+            }
+
+            if (index === 1) {
+                alert('Nemáte vybrané žiadne potraviny. Prosím, vyberte aspoň jednu položku.');
+                return;
+            }
+
+            const emailBody = 
+`Vážený pán doktor / Vážená pani doktorka,
+
+týmto by som Vás chcel(a) požiadať o vystavenie elektronického receptu na bezlepkové dietetické potraviny (kategória V06CE) na základe platného indikačného obmedzenia.
+
+Údaje pacienta:
+• Meno a priezvisko: ${name}
+• Rodné číslo / Číslo poistenca: ${id}
+• Požadované obdobie (mesiac/rok): ${period}
+
+Požadovaný zoznam potravín:
+--------------------------------------------------
+${itemsListText}--------------------------------------------------
+
+Vopred veľmi pekne ďakujem za ochotu a vybavenie receptu.
+
+S pozdravom,
+
+${name}`;
+
+            document.getElementById('emailOutput').value = emailBody;
+
+            const subject = encodeURIComponent(`Žiadosť o predpis bezlepkových potravín (V06CE) – ${name} – ${period}`);
+            const body = encodeURIComponent(emailBody);
+            document.getElementById('mailtoLink').href = `mailto:${email}?subject=${subject}&body=${body}`;
+
+            document.getElementById('summaryModal').classList.remove('hidden');
+        }
+
+        function closeSummaryModal() {
+            document.getElementById('summaryModal').classList.add('hidden');
+        }
+
+        function copyToClipboard() {
+            const textarea = document.getElementById('emailOutput');
+            textarea.select();
+            document.execCommand('copy');
+            alert('Text e-mailu bol skopírovaný do schránky!');
+        }
+
+        loadPatientData();
+        setupLocalStorageListeners();
+        loadProducts();
+    </script>
+</body>
+</html>
