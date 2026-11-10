@@ -47,7 +47,7 @@ def main():
     mask = df.astype(str).apply(lambda col: col.str.contains("V06CE", na=False)).any(axis=1)
     df_v06ce = df[mask].copy()
     
-    print(f"Nájdených {len(df_v06ce)} položiek s kategóriou V06CE.")
+    print(f"Nájdených {len(df_v06ce)} riadkov s kategóriou V06CE.")
     
     cleaned_data = []
     for idx, row in df_v06ce.iterrows():
@@ -73,8 +73,12 @@ def main():
                     sukl = val_str
                     break
 
+        # DÔLEŽITÉ: Preskočíme riadky, ktoré sú len skupinovými hlavičkami (začínajú na V06CE)
+        if sukl.upper().startswith("V06CE") or not sukl or sukl == "nan":
+            continue
+
         item = {
-            "sukl": sukl if sukl and sukl != "nan" else "Neznámy",
+            "sukl": sukl,
             "nazov": nazov if nazov and nazov != "nan" else "Bez názvu",
             "doplnok": doplnok if doplnok != "nan" else "",
             "vyrobca": vyrobca if vyrobca != "nan" else "",
@@ -87,7 +91,7 @@ def main():
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(cleaned_data, f, ensure_ascii=False, indent=2)
     
-    print(f"Uložených {len(cleaned_data)} položiek do {OUTPUT_FILE}")
+    print(f"Uložených {len(cleaned_data)} reálnych produktov do {OUTPUT_FILE}")
     
     if os.path.exists(temp_excel):
         os.remove(temp_excel)
