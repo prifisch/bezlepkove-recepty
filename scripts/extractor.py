@@ -38,24 +38,45 @@ def main():
   header_row_idx = 0
   for idx, row in df_raw.head(25).iterrows():
     row_str = " ".join(str(val) for val in row.values)
-    if "V06CE" in row_str or "ŠÚKL" in row_str or "Kód" in row_str:
+    if "ŠÚKL" in row_str or "Kód" in row_str or "Názov" in row_str:
       header_row_idx = idx
       break
 
   print(f"Hlavička nájdená na riadku: {header_row_idx}")
   df = pd.read_excel(temp_excel, sheet_name=0, header=header_row_idx)
-  print("Dostupné stĺpce v exceli:", list(df.columns))
 
   cleaned_data = []
+  in_v06ce_section = False
 
   for idx, row in df.iterrows():
-    values = [str(val).strip() for val in row.values if pd.notna(val)]
-    if not values:
+    row_str = " ".join(str(val) for val in row.values if pd.notna(val))
+
+    # Detegujeme začiatok V06CE sekcie
+    if "V06CE" in row_str:
+      in_v06ce_section = True
       continue
 
-    # Riadok musí patriť do kategórie V06CE
-    is_v06ce = any("V06CE" in str(val) for val in row.values)
-    if not is_v06ce:
+    # Ak sme v sekcii V06CE a narazíme na novú hlavnú kategóriu, ukončíme zber
+    if in_v06ce_section:
+      if any(
+          cat in row_str
+          for cat in [
+              "V06A",
+              "V06B",
+              "V06C",
+              "V06D",
+              "V07",
+              "V08",
+              "A01",
+              "B01",
+              "J01",
+          ]
+          and "V06CE" not in row_str
+      ):
+        in_v06ce_section = False
+        continue
+
+    if not in_v06ce_section:
       continue
 
     sukl = ""
@@ -64,7 +85,6 @@ def main():
     vyrobca = ""
     balenie = ""
 
-    # Vyhľadanie podľa názvov stĺpcov
     for col in df.columns:
       col_lower = str(col).lower()
       val = row.get(col)
@@ -95,42 +115,45 @@ def main():
       elif "balenie" in col_lower or "veľkosť" in col_lower:
         balenie = val_str
 
-    # Heuristika pre ŠÚKL kód, ak sa nenašiel cez názov stĺpca
-    if not sukl or sukl.upper().startswith("V06CE"):
-      for val in values:
-        if (
-            re.match(r"^[0-9A-Z]{5,10}$", val)
-            and not val.upper().startswith("V06CE")
-        ):
-          sukl = val
+    # Ak sa nenašiel ŠÚKL kód cez stĺpec, vyhľadáme ho v riadku
+    if not sukl:
+      for val in row.values:
+        val_str = str(val).strip()
+        if re.match(r"^[0-9A-Z]{5,10}$", val_str) and val_str not in [
+            "V06CE",
+            "V06CEX",
+            "V06CEY",
+        ]:
+          sukl = val_str
           break
 
-    # Ak je to stále len hlavička kategórie, preskočíme
     if not sukl or sukl.upper().startswith("V06CE"):
       continue
 
     # Doplnenie názvu, ak chýba
     if not nazov:
-      for val in values:
-        if len(val) > 4 and val != sukl and "V06CE" not in val:
-          nazov = val
+      for val in row.values:
+        val_str = str(val).strip()
+        if len(val_str) > 3 and val_str != sukl:
+          nazov = val_str
           break
 
     # Doplnenie balenia, ak chýba
     if not balenie:
-      for val in values:
+      for val in row.values:
+        val_str = str(val).strip()
         if any(
-            unit in val.lower() for unit in ["g", "kg", "ml", "ks", "tbl"]
+            unit in val_str.lower() for unit in ["g", "kg", "ml", "ks", "tbl"]
         ):
-          balenie = val
+          balenie = val_str
           break
 
     item = {
         "sukl": sukl,
         "nazov": nazov if nazov else "Bezlepková potravina",
-        "doplnok": doplnok,
-        "vyrobca": vyrobca,
-        "balenie": balenie if balenie else "",
+        "doplnok": doplnok if pd.notna(doplnok) else "",
+        "vyrobca": vyrobca if pd.notna(vyrobca) else "",
+        "balenie": balenie if pd.notna(balenie) else "",
         "hmotnost_g": parse_weight_in_grams(f"{balenie} {doplnok}"),
     }
 
