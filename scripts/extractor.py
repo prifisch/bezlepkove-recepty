@@ -128,11 +128,14 @@ def main():
         image_path = ""
 
         # Ak máme pre tento ŠÚKL kód vytvorenú lokálnu úpravu, aplikujeme ju
+        kategoria = ""
         if sukl in overrides:
             if "hmotnost_g" in overrides[sukl]:
                 weight = overrides[sukl]["hmotnost_g"]
             if "image" in overrides[sukl]:
                 image_path = overrides[sukl]["image"]
+            if "kategoria" in overrides[sukl]:
+                kategoria = overrides[sukl]["kategoria"]
 
         item = {
             "sukl": sukl,
@@ -141,7 +144,8 @@ def main():
             "vyrobca": clean_vyrobca,
             "balenie": balenie if pd.notna(balenie) else "",
             "hmotnost_g": weight,
-            "image": image_path
+            "image": image_path,
+            "kategoria": kategoria
         }
         
         if item["sukl"] and not any(x["sukl"] == item["sukl"] for x in cleaned_data):
