@@ -225,6 +225,12 @@
                 if (!matchesText) return false;
                 if (activeCategory === 'vsetky') return true;
                 
+                // Ak má produkt natvrdo určenú kategóriu v overrides, použijeme ju
+                if (p.kategoria) {
+                    return p.kategoria === activeCategory;
+                }
+                
+                // Inak zlyháme na automatický fallback podľa názvu
                 let nazovL = (p.nazov + ' ' + (p.doplnok || '')).toLowerCase();
                 if (activeCategory === 'muka') return nazovL.includes('múk') || nazovL.includes('zmes') || nazovL.includes('škrob');
                 if (activeCategory === 'chlieb') return nazovL.includes('chlieb') || nazovL.includes('pečivo') || nazovL.includes('žeml') || nazovL.includes('toast');
