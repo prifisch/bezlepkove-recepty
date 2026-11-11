@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Výber bezlepkových potravín V06CE</title>
+    <title>Objednávka bezlepkových potravín</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -14,12 +14,11 @@
         <div class="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <span class="bg-emerald-800/60 text-emerald-100 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Kategória V06CE</span>
-                <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Výber bezlepkových potravín</h1>
-                <p class="text-emerald-100 text-sm mt-1">Jednoduchý výber pre predpis v ambulancii s automatickou kontrolou 9 kg limitu.</p>
+                <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Objednávka bezlepkových potravín</h1>
             </div>
             <div class="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/20 text-xs text-emerald-50">
                 <span class="block font-medium">Zdroj dát: MZ SR</span>
-                <span class="text-emerald-200">Aktualizované automaticky</span>
+                <span class="text-emerald-200">Aktualizované: 11.11.2026</span>
             </div>
         </div>
     </header>
@@ -238,12 +237,10 @@
             renderProducts(filtered);
         }
 
-        // Spoľahlivá funkcia pre obrázok produktu s bezpečnou poistkou (fallback na štýlovú ikonu)
         function getProductImageHtml(p) {
             let imgSrc = p.image;
             let l = (p.nazov || '').toLowerCase();
             
-            // Určenie kategóriového fallbacku
             let fallbackBg = 'bg-emerald-50 text-emerald-700 border-emerald-200';
             let fallbackSvg = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>';
             
